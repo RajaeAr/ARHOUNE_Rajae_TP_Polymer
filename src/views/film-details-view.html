@@ -1,0 +1,84 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="film-details-view">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+      a,
+      a:visited,
+      a:hover,
+      a:active {
+          color: inherit;
+          text-decoration: none;
+          text-decoration-style: none;
+      }
+      paper-button {
+        background: #ffab91;
+      }
+    </style>
+
+    <app-route
+        route="{{route}}"
+        pattern="/:id"
+        data="{{routeData}}"
+        tail="{{subroute}}">
+    </app-route>
+    <h2>Film's details : {{film.title}}</h2>
+   <p><strong>Title  : </strong> {{film.title}} <p>
+   <p><strong>director :</strong>  {{film.director}} <p>
+   <p><strong>Producer(s) :</strong>  {{film.producer}} <p>
+   <p><strong>release_date :</strong>  {{film.release_date}}</p>
+   <p><strong>opening_crawl :</strong>  {{film.opening_crawl}}</p>
+   <p><strong>Starships :</strong>  
+ 
+   <template is="dom-repeat" items="{{film.starships}}" as="s">
+     <br><br>
+      <paper-button toggles raised class="green"> <a href="/starship-details/[[getId(s)]]" >starship Num {{getId(s)}}</a></paper-button> 
+   </template>
+
+   
+          
+  </template>
+
+  <script>
+    class FilmDetailsView extends Polymer.Element {
+      static get is() { return 'film-details-view'; }
+      static get properties(){return {film : {
+        type:Object,
+        observer:'recharger'
+      }}}
+      connectedCallback(){
+        super.connectedCallback();
+        fetch('https://swapi.co/api/films/'+this.routeData.id+'/').then(resultat => resultat.json().then( re => this.film = re));
+      }
+      recharger(){
+        fetch('https://swapi.co/api/films/'+this.routeData.id+'/').then(resultat => resultat.json().then( re => this.film = re));
+      }
+     
+      getId(url){
+        let a = url.split('/');
+        return a[a.length-2];
+      }
+    }
+
+    window.customElements.define(FilmDetailsView.is, FilmDetailsView);
+
+    
+
+  </script>
+</dom-module>

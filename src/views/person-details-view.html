@@ -1,0 +1,91 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="person-details-view">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+      a,
+      a:visited,
+      a:hover,
+      a:active {
+          color: inherit;
+          text-decoration: none;
+          text-decoration-style: none;
+      }
+      paper-button {
+        background: #ffab91;
+      }
+    </style>
+
+    <app-route
+        route="{{route}}"
+        pattern="/:id"
+        data="{{routeData}}"
+        tail="{{subroute}}">
+    </app-route>
+
+    <h2>Person's details : {{person.name}}</h2><p>
+      <strong>height  : </strong> {{person.height}} <p>
+      <p><strong>mass :</strong>  {{person.mass}} <p>
+      <p><strong>hair_color :</strong>  {{person.hair_color}} <p>
+      <p><strong>skin_color :</strong>  {{person.skin_color}}</p>
+      <p><strong>eye_color :</strong>  {{person.eye_color}}</p>
+      <p><strong>Films :</strong>  
+    
+      <template is="dom-repeat" items="{{person.films}}" as="s">
+        <br><br>
+         <paper-button toggles raised class="green"> <a href="/film-details/[[getId(s)]]" >Film Num {{getId(s)}}</a></paper-button> 
+      </template>
+    
+      <p><strong>Starships :</strong>  
+        
+          <template is="dom-repeat" items="{{person.starships}}" as="s">
+            <br><br>
+             <paper-button toggles raised class="green"> <a href="/starship-details/[[getId(s)]]" >starship Num {{getId(s)}}</a></paper-button> 
+          </template>
+        
+
+  </template>
+
+  <script>
+    class PersonDetailsView extends Polymer.Element {
+      static get is() { return 'person-details-view'; }
+      static get properties(){return {person : {
+        type:Object,
+        observer:'recharger'
+      }}}
+      connectedCallback(){
+        super.connectedCallback();
+        fetch('https://swapi.co/api/people/'+this.routeData.id+'/').then(resultat => resultat.json().then( re => this.person = re));
+      }
+      recharger(){
+        fetch('https://swapi.co/api/people/'+this.routeData.id+'/').then(resultat => resultat.json().then( re => this.person = re));
+      }
+      getId(url){
+        let a = url.split('/');
+        return a[a.length-2];
+      }
+      
+    }
+
+    window.customElements.define(PersonDetailsView.is, PersonDetailsView);
+
+    
+
+  </script>
+</dom-module>

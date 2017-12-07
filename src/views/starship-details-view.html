@@ -1,0 +1,88 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="starship-details-view">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+      a,
+      a:visited,
+      a:hover,
+      a:active {
+          color: inherit;
+          text-decoration: none;
+          text-decoration-style: none;
+      }
+      paper-button {
+        background: #ffab91;
+      }
+    </style>
+
+    <app-route
+        route="{{route}}"
+        pattern="/:id"
+        data="{{routeData}}"
+        tail="{{subroute}}">
+    </app-route>
+
+    <h2>starship's details : {{starship.name}}</h2><p>
+        <strong>model  : </strong> {{starship.model}} <p>
+        <p><strong>manufacturer :</strong>  {{starship.manufacturer}} <p>
+        <p><strong>cost_in_credits :</strong>  {{starship.cost_in_credits}} <p>
+        <p><strong>max_atmosphering_speed :</strong>  {{starship.max_atmosphering_speed}}</p>
+        <p><strong>passengers :</strong>  {{starship.passengers}}</p>
+        <p><strong>Films :</strong>  
+      
+        <template is="dom-repeat" items="{{starship.films}}" as="f">
+          <br><br>
+          <paper-button toggles raised class="green"> <a href="/film-details/[[getId(f)]]" >Film Num {{getId(f)}}</a></paper-button> 
+        </template>
+          
+
+
+  </template>
+
+  <script>
+    class StarshipDetailsView extends Polymer.Element {
+      static get is() { return 'starship-details-view'; }
+      static get properties(){return {starship : {
+        type:Object,
+        observer:'recharger'
+      }}}
+      
+      connectedCallback(){
+        super.connectedCallback();
+        fetch('https://swapi.co/api/starships/'+this.routeData.id+'/').then(resultat => resultat.json().then( re => this.starship = re));
+      }
+      recharger(){
+        fetch('https://swapi.co/api/starships/'+this.routeData.id+'/').then(resultat => resultat.json().then( re => this.starship = re));
+      }
+      
+      getId(url){
+        let a = url.split('/');
+        return a[a.length-2];
+      }
+      
+      
+    }
+
+    window.customElements.define(StarshipDetailsView.is, StarshipDetailsView);
+
+    
+
+  </script>
+</dom-module>

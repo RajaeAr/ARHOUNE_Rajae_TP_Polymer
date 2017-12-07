@@ -1,0 +1,68 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../shared-styles.html">
+<link rel="import" href="../components/starship-view.html">
+
+<dom-module id="starships-view">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+    </style>
+
+    <h1>Star war's starships</h1>
+
+
+    <paper-input always-float-label label="Find a starship" on-input="textChange" value="{{text}}"></paper-input>
+
+
+     <template is="dom-repeat" items="{{starships}}" as="s">
+      <starship-view starship="[[s]]"></starship-view>
+      </template>
+
+  </template>
+
+  <script>
+    class starshipsView extends Polymer.Element {
+      static get is() { return 'starships-view'; }
+      static get observers() {
+        return [
+        '_routeChanged(route.*)'
+        ]
+      }
+      connectedCallback(){
+        super.connectedCallback();
+        fetch('https://swapi.co/api/starships/').then(resultat => resultat.json().then( re => this.starships = re.results));
+      }
+
+      _routeChanged(changeR){
+        if(changeR.value.path === '/starships'){
+          fetch('https://swapi.co/api/starships/').then(resultat => resultat.json().then(re => this.starships = re.results));
+        }
+      }
+      textChange() {
+        if (this.text == "")
+            this.isTextEmpty = true;
+        else
+            this.isTextEmpty = false;
+            fetch('https://swapi.co/api/starships/?search='+this.text).then(resultat => resultat.json().then(re => this.starships = re.results));
+            console.log(this.text);
+    }
+    }
+  
+
+    window.customElements.define(starshipsView.is, starshipsView);
+  </script>
+</dom-module>
